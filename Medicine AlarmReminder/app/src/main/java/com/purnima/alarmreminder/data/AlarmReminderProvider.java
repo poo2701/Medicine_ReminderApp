@@ -10,10 +10,8 @@ import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.util.Log;
+import android.widget.Toast;
 
-/**
- * Created by delaroy on 10/25/17.
- */
 
 public class AlarmReminderProvider extends ContentProvider {
 
@@ -24,13 +22,13 @@ public class AlarmReminderProvider extends ContentProvider {
     private static final int REMINDER_ID = 101;
 
 
-    private static final UriMatcher sUriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
+    private static final UriMatcher um = new UriMatcher(UriMatcher.NO_MATCH);
 
     static {
 
-        sUriMatcher.addURI(AlarmReminderContract.CONTENT_AUTHORITY, AlarmReminderContract.PATH_VEHICLE, REMINDER);
+        um.addURI(AlarmReminderContract.CONTENT_AUTHORITY, AlarmReminderContract.PATH_VEHICLE, REMINDER);
 
-        sUriMatcher.addURI(AlarmReminderContract.CONTENT_AUTHORITY, AlarmReminderContract.PATH_VEHICLE + "/#", REMINDER_ID);
+        um.addURI(AlarmReminderContract.CONTENT_AUTHORITY, AlarmReminderContract.PATH_VEHICLE + "/#", REMINDER_ID);
 
     }
 
@@ -47,11 +45,216 @@ public class AlarmReminderProvider extends ContentProvider {
     public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs,
     String sortOrder) {
         SQLiteDatabase database = mDbHelper.getReadableDatabase();
+       /*
+        Cursor cursor=new Cursor() {
+            @Override
+            public int getCount() {
+                return 0;
+            }
 
-        // This cursor will hold the result of the query
+            @Override
+            public int getPosition() {
+                return 0;
+            }
+
+            @Override
+            public boolean move(int i) {
+                return false;
+            }
+
+            @Override
+            public boolean moveToPosition(int i) {
+                return false;
+            }
+
+            @Override
+            public boolean moveToFirst() {
+                return false;
+            }
+
+            @Override
+            public boolean moveToLast() {
+                return false;
+            }
+
+            @Override
+            public boolean moveToNext() {
+                return false;
+            }
+
+            @Override
+            public boolean moveToPrevious() {
+                return false;
+            }
+
+            @Override
+            public boolean isFirst() {
+                return false;
+            }
+
+            @Override
+            public boolean isLast() {
+                return false;
+            }
+
+            @Override
+            public boolean isBeforeFirst() {
+                return false;
+            }
+
+            @Override
+            public boolean isAfterLast() {
+                return false;
+            }
+
+            @Override
+            public int getColumnIndex(String s) {
+                return 0;
+            }
+
+            @Override
+            public int getColumnIndexOrThrow(String s) throws IllegalArgumentException {
+                return 0;
+            }
+
+            @Override
+            public String getColumnName(int i) {
+                return null;
+            }
+
+            @Override
+            public String[] getColumnNames() {
+                return new String[0];
+            }
+
+            @Override
+            public int getColumnCount() {
+                return 0;
+            }
+
+            @Override
+            public byte[] getBlob(int i) {
+                return new byte[0];
+            }
+
+            @Override
+            public String getString(int i) {
+                return null;
+            }
+
+            @Override
+            public void copyStringToBuffer(int i, CharArrayBuffer charArrayBuffer) {
+
+            }
+
+            @Override
+            public short getShort(int i) {
+                return 0;
+            }
+
+            @Override
+            public int getInt(int i) {
+                return 0;
+            }
+
+            @Override
+            public long getLong(int i) {
+                return 0;
+            }
+
+            @Override
+            public float getFloat(int i) {
+                return 0;
+            }
+
+            @Override
+            public double getDouble(int i) {
+                return 0;
+            }
+
+            @Override
+            public int getType(int i) {
+                return 0;
+            }
+
+            @Override
+            public boolean isNull(int i) {
+                return false;
+            }
+
+            @Override
+            public void deactivate() {
+
+            }
+
+            @Override
+            public boolean requery() {
+                return false;
+            }
+
+            @Override
+            public void close() {
+
+            }
+
+            @Override
+            public boolean isClosed() {
+                return false;
+            }
+
+            @Override
+            public void registerContentObserver(ContentObserver contentObserver) {
+
+            }
+
+            @Override
+            public void unregisterContentObserver(ContentObserver contentObserver) {
+
+            }
+
+            @Override
+            public void registerDataSetObserver(DataSetObserver dataSetObserver) {
+
+            }
+
+            @Override
+            public void unregisterDataSetObserver(DataSetObserver dataSetObserver) {
+
+            }
+
+            @Override
+            public void setNotificationUri(ContentResolver contentResolver, Uri uri) {
+
+            }
+
+            @Override
+            public Uri getNotificationUri() {
+                return null;
+            }
+
+            @Override
+            public boolean getWantsAllOnMoveCalls() {
+                return false;
+            }
+
+            @Override
+            public void setExtras(Bundle bundle) {
+
+            }
+
+            @Override
+            public Bundle getExtras() {
+                return null;
+            }
+
+            @Override
+            public Bundle respond(Bundle bundle) {
+                return null;
+            }
+        }*/
         Cursor cursor = null;
 
-        int match = sUriMatcher.match(uri);
+        int match = um.match(uri);
         switch (match) {
             case REMINDER:
                 cursor = database.query(AlarmReminderContract.AlarmReminderEntry.TABLE_NAME, projection, selection, selectionArgs,
@@ -76,7 +279,7 @@ public class AlarmReminderProvider extends ContentProvider {
     @Nullable
     @Override
     public String getType(@NonNull Uri uri) {
-        final int match = sUriMatcher.match(uri);
+        final int match = um.match(uri);
         switch (match) {
             case REMINDER:
                 return AlarmReminderContract.AlarmReminderEntry.CONTENT_LIST_TYPE;
@@ -86,18 +289,11 @@ public class AlarmReminderProvider extends ContentProvider {
                 throw new IllegalStateException("Unknown URI " + uri + " with match " + match);
         }
     }
+    private void StopReminder(ContentValues contentValues){
+      /*  Toast.makeText(AlarmReminderProvider.this, " Generate toast",
+                Toast.LENGTH_LONG).show();
 
-    @Nullable
-    @Override
-    public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
-        final int match = sUriMatcher.match(uri);
-        switch (match) {
-            case REMINDER:
-                return insertReminder(uri, contentValues);
-
-            default:
-                throw new IllegalArgumentException("Insertion is not supported for " + uri);
-        }
+       */
     }
 
     private Uri insertReminder(Uri uri, ContentValues values) {
@@ -116,6 +312,20 @@ public class AlarmReminderProvider extends ContentProvider {
         return ContentUris.withAppendedId(uri, id);
     }
 
+    @Override
+    public Uri insert(@NonNull Uri uri, @Nullable ContentValues contentValues) {
+        final int match = um.match(uri);
+        switch (match) {
+            case REMINDER:
+                return insertReminder(uri, contentValues);
+
+            default:
+                throw new IllegalArgumentException("Insertion is not supported for " + uri);
+        }
+    }
+
+
+
 
     @Override
     public int delete(Uri uri, String selection, String[] selectionArgs) {
@@ -124,7 +334,7 @@ public class AlarmReminderProvider extends ContentProvider {
 
         int rowsDeleted;
 
-        final int match = sUriMatcher.match(uri);
+        final int match = um.match(uri);
         switch (match) {
             case REMINDER:
                 rowsDeleted = database.delete(AlarmReminderContract.AlarmReminderEntry.TABLE_NAME, selection, selectionArgs);
@@ -144,11 +354,16 @@ public class AlarmReminderProvider extends ContentProvider {
 
         return rowsDeleted;
     }
-
+/*
+    @Override
+    public boolean refresh(Uri uri, @Nullable Bundle args, @Nullable CancellationSignal cancellationSignal) {
+        return super.refresh(uri, args, cancellationSignal);
+    }
+*/
     @Override
     public int update(Uri uri, ContentValues contentValues, String selection,
                       String[] selectionArgs) {
-        final int match = sUriMatcher.match(uri);
+        final int match = um.match(uri);
         switch (match) {
             case REMINDER:
                 return updateReminder(uri, contentValues, selection, selectionArgs);
@@ -159,6 +374,9 @@ public class AlarmReminderProvider extends ContentProvider {
             default:
                 throw new IllegalArgumentException("Update is not supported for " + uri);
         }
+    }
+    private void setLogTag1(){
+       // Log.i(TAG, "setLogTag1.getView() — get item number " + position);
     }
 
     private int updateReminder(Uri uri, ContentValues values, String selection, String[] selectionArgs) {

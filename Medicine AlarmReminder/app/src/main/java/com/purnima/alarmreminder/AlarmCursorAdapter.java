@@ -14,49 +14,58 @@ import com.amulyakhare.textdrawable.util.ColorGenerator;
 import com.delaroystudios.alarmreminder.R;
 import com.purnima.alarmreminder.data.AlarmReminderContract;
 
-/**
- * Created by delaroy on 10/27/17.
- */
+
 
 public class AlarmCursorAdapter extends CursorAdapter {
-
-    private TextView mTitleText, mDateAndTimeText, mRepeatInfoText;
-    private ImageView mActiveImage , mThumbnailImage;
-    private ColorGenerator mColorGenerator = ColorGenerator.DEFAULT;
-    private TextDrawable mDrawableBuilder;
-
-    public AlarmCursorAdapter(Context context, Cursor c) {
-        super(context, c, 0 /* flags */);
-    }
-    @Override
+    private ColorGenerator cgn = ColorGenerator.DEFAULT;
+    private TextDrawable dbr1;
+    private TextView txt1
+            , dttx1
+            , reptx1;
+    private ImageView Aimg
+            , timg;
     public View newView(Context context, Cursor cursor, ViewGroup parent) {
         return LayoutInflater.from(context).inflate(R.layout.alarm_items, parent, false);
     }
 
-    @Override
     public void bindView(View view, Context context, Cursor cursor) {
+        dttx1 = (TextView) view.findViewById(R.id.recycle_date_time);
 
-        mTitleText = (TextView) view.findViewById(R.id.recycle_title);
-        mDateAndTimeText = (TextView) view.findViewById(R.id.recycle_date_time);
-        mRepeatInfoText = (TextView) view.findViewById(R.id.recycle_repeat_info);
-        mActiveImage = (ImageView) view.findViewById(R.id.active_image);
-        mThumbnailImage = (ImageView) view.findViewById(R.id.thumbnail_image);
+
+        timg = (ImageView) view.findViewById(R.id.thumbnail_image);
+
+        reptx1 = (TextView) view.findViewById(R.id.recycle_repeat_info);
+        txt1 = (TextView) view.findViewById(R.id.recycle_title);
+
+        Aimg = (ImageView) view.findViewById(R.id.active_image);
+
+        int timeColumnIndex = cursor.getColumnIndex(AlarmReminderContract.AlarmReminderEntry.KEY_TIME);
+
+
+
+        int activeColumnIndex = cursor.getColumnIndex(AlarmReminderContract.AlarmReminderEntry.KEY_ACTIVE);
+
+        int repeatColumnIndex = cursor.getColumnIndex(AlarmReminderContract.AlarmReminderEntry.KEY_REPEAT);
+        int repeatNoColumnIndex = cursor.getColumnIndex(AlarmReminderContract.AlarmReminderEntry.KEY_REPEAT_NO);
 
         int titleColumnIndex = cursor.getColumnIndex(AlarmReminderContract.AlarmReminderEntry.KEY_TITLE);
         int dateColumnIndex = cursor.getColumnIndex(AlarmReminderContract.AlarmReminderEntry.KEY_DATE);
-        int timeColumnIndex = cursor.getColumnIndex(AlarmReminderContract.AlarmReminderEntry.KEY_TIME);
-        int repeatColumnIndex = cursor.getColumnIndex(AlarmReminderContract.AlarmReminderEntry.KEY_REPEAT);
-        int repeatNoColumnIndex = cursor.getColumnIndex(AlarmReminderContract.AlarmReminderEntry.KEY_REPEAT_NO);
-        int repeatTypeColumnIndex = cursor.getColumnIndex(AlarmReminderContract.AlarmReminderEntry.KEY_REPEAT_TYPE);
-        int activeColumnIndex = cursor.getColumnIndex(AlarmReminderContract.AlarmReminderEntry.KEY_ACTIVE);
 
-        String title = cursor.getString(titleColumnIndex);
+        int repeatTypeColumnIndex = cursor.getColumnIndex(AlarmReminderContract.AlarmReminderEntry.KEY_REPEAT_TYPE);
+
         String date = cursor.getString(dateColumnIndex);
-        String time = cursor.getString(timeColumnIndex);
-        String repeat = cursor.getString(repeatColumnIndex);
-        String repeatNo = cursor.getString(repeatNoColumnIndex);
+
         String repeatType = cursor.getString(repeatTypeColumnIndex);
         String active = cursor.getString(activeColumnIndex);
+
+        String time = cursor.getString(timeColumnIndex);
+
+
+        String title = cursor.getString(titleColumnIndex);
+
+        String repeat = cursor.getString(repeatColumnIndex);
+        String repeatNo = cursor.getString(repeatNoColumnIndex);
+
 
         String dateTime = date + " " + time;
 
@@ -70,44 +79,49 @@ public class AlarmCursorAdapter extends CursorAdapter {
 
 
     }
+    public void setReminderDateTime(String datetime) {
+        dttx1.setText(datetime);
+    }
 
-    // Set reminder title view
+
+    public AlarmCursorAdapter(Context context, Cursor c) {
+        super(context, c, 0 /* flags */);
+    }
+
+
+    public void setReminderRepeatInfo(String repeat, String repeatNo, String repeatType) {
+        if(repeat.equals("true")){
+            reptx1.setText("Every " + repeatNo + " " + repeatType + "(s)");
+        }else if (repeat.equals("false")) {
+            reptx1.setText("Repeat Off");
+        }
+    }
+
+
+
+
+
     public void setReminderTitle(String title) {
-        mTitleText.setText(title);
+        txt1.setText(title);
         String letter = "A";
 
         if(title != null && !title.isEmpty()) {
             letter = title.substring(0, 1);
         }
 
-        int color = mColorGenerator.getRandomColor();
+        int color = cgn.getRandomColor();
 
-        // Create a circular icon consisting of  a random background colour and first letter of title
-        mDrawableBuilder = TextDrawable.builder()
+        dbr1 = TextDrawable.builder()
                 .buildRound(letter, color);
-        mThumbnailImage.setImageDrawable(mDrawableBuilder);
+        timg.setImageDrawable(dbr1);
     }
 
-    // Set date and time views
-    public void setReminderDateTime(String datetime) {
-        mDateAndTimeText.setText(datetime);
-    }
 
-    // Set repeat views
-    public void setReminderRepeatInfo(String repeat, String repeatNo, String repeatType) {
-        if(repeat.equals("true")){
-            mRepeatInfoText.setText("Every " + repeatNo + " " + repeatType + "(s)");
-        }else if (repeat.equals("false")) {
-            mRepeatInfoText.setText("Repeat Off");
-        }
-    }
-
-    // Set active image as on or off
     public void setActiveImage(String active){
         if(active.equals("true")){
-            mActiveImage.setImageResource(R.drawable.ic_notifications_on_white_24dp);
+            Aimg.setImageResource(R.drawable.ic_notifications_on_white_24dp);
         }else if (active.equals("false")) {
-            mActiveImage.setImageResource(R.drawable.ic_notifications_off_grey600_24dp);
+            Aimg.setImageResource(R.drawable.ic_notifications_off_grey600_24dp);
         }
     }
 }

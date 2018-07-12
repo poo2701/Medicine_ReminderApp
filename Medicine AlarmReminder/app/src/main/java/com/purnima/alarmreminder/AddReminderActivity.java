@@ -25,6 +25,7 @@ import android.widget.Switch;
 import android.widget.TextView;
 import android.widget.Toast;
 
+
 import com.delaroystudios.alarmreminder.R;
 import com.purnima.alarmreminder.data.AlarmReminderContract;
 import com.purnima.alarmreminder.reminder.AlarmScheduler;
@@ -35,9 +36,6 @@ import com.wdullaer.materialdatetimepicker.time.TimePickerDialog;
 
 import java.util.Calendar;
 
-/**
- * Created by delaroy on 10/26/17.
- */
 
 public class AddReminderActivity extends AppCompatActivity implements
         TimePickerDialog.OnTimeSetListener,
@@ -45,28 +43,46 @@ public class AddReminderActivity extends AppCompatActivity implements
 
     private static final int EXISTING_VEHICLE_LOADER = 0;
 
+    private String mRepeat;
+    private String mrn;
 
-    private Toolbar mToolbar;
-    private EditText mTitleText;
-    private TextView mDateText, mTimeText, mRepeatText, mRepeatNoText, mRepeatTypeText;
-    private FloatingActionButton mFAB1;
-    private FloatingActionButton mFAB2;
-    private Calendar mCalendar;
-    private int mYear, mMonth, mHour, mMinute, mDay;
+    private String time1;
+    private TextView Dateview
+            , timeshow
+            , onrepeate1
+            , it1
+            , Settype;
+
+    private String mDate;
+    private FloatingActionButton btn1;
+
+
+    private FloatingActionButton btn2;
+
+
+    private String av;
+
+    private Toolbar tb;
+    private EditText txt1;
+    private String rt12;
+    private String tl1;
+
+
+    private Calendar cal;
+    private int yr, month, hr, min, day;
     private long mRepeatTime;
     private Switch mRepeatSwitch;
-    private String mTitle;
-    private String mTime;
-    private String mDate;
-    private String mRepeat;
-    private String mRepeatNo;
-    private String mRepeatType;
-    private String mActive;
 
     private Uri mCurrentReminderUri;
-    private boolean mVehicleHasChanged = false;
+    private boolean flag1 = false;
 
-    // Values for orientation change
+// time initialise
+    private static final long min1 = 60000L;
+    private static final long hr1 = 3600000L;
+    private static final long day1 = 86400000L;
+    private static final long week1 = 604800000L;
+    private static final long mont1 = 2592000000L;
+
     private static final String KEY_TITLE = "title_key";
     private static final String KEY_TIME = "time_key";
     private static final String KEY_DATE = "date_key";
@@ -76,17 +92,12 @@ public class AddReminderActivity extends AppCompatActivity implements
     private static final String KEY_ACTIVE = "active_key";
 
 
-    // Constant values in milliseconds
-    private static final long milMinute = 60000L;
-    private static final long milHour = 3600000L;
-    private static final long milDay = 86400000L;
-    private static final long milWeek = 604800000L;
-    private static final long milMonth = 2592000000L;
+
 
     private View.OnTouchListener mTouchListener = new View.OnTouchListener() {
         @Override
         public boolean onTouch(View view, MotionEvent motionEvent) {
-            mVehicleHasChanged = true;
+            flag1 = true;
             return false;
         }
     };
@@ -103,8 +114,7 @@ public class AddReminderActivity extends AppCompatActivity implements
 
             setTitle(getString(R.string.editor_activity_title_new_reminder));
 
-            // Invalidate the options menu, so the "Delete" menu option can be hidden.
-            // (It doesn't make sense to delete a reminder that hasn't been created yet.)
+
             invalidateOptionsMenu();
         } else {
 
@@ -114,98 +124,96 @@ public class AddReminderActivity extends AppCompatActivity implements
             getLoaderManager().initLoader(EXISTING_VEHICLE_LOADER, null, this);
         }
 
-
-        // Initialize Views
-        mToolbar = (Toolbar) findViewById(R.id.toolbar);
-        mTitleText = (EditText) findViewById(R.id.reminder_title);
-        mDateText = (TextView) findViewById(R.id.set_date);
-        mTimeText = (TextView) findViewById(R.id.set_time);
-        mRepeatText = (TextView) findViewById(R.id.set_repeat);
-        mRepeatNoText = (TextView) findViewById(R.id.set_repeat_no);
-        mRepeatTypeText = (TextView) findViewById(R.id.set_repeat_type);
-        mRepeatSwitch = (Switch) findViewById(R.id.repeat_switch);
-        mFAB1 = (FloatingActionButton) findViewById(R.id.starred1);
-        mFAB2 = (FloatingActionButton) findViewById(R.id.starred2);
-
-        // Initialize default values
-        mActive = "true";
+        av = "true";
         mRepeat = "true";
-        mRepeatNo = Integer.toString(1);
-        mRepeatType = "Hour";
+        mrn = Integer.toString(1);
+        rt12 = "Hour";
 
-        mCalendar = Calendar.getInstance();
-        mHour = mCalendar.get(Calendar.HOUR_OF_DAY);
-        mMinute = mCalendar.get(Calendar.MINUTE);
-        mYear = mCalendar.get(Calendar.YEAR);
-        mMonth = mCalendar.get(Calendar.MONTH) + 1;
-        mDay = mCalendar.get(Calendar.DATE);
+        cal = Calendar.getInstance();
+        hr = cal.get(Calendar.HOUR_OF_DAY);
+        min = cal.get(Calendar.MINUTE);
+        yr = cal.get(Calendar.YEAR);
+        month = cal.get(Calendar.MONTH) + 1;
+        day = cal.get(Calendar.DATE);
 
-        mDate = mDay + "/" + mMonth + "/" + mYear;
-        mTime = mHour + ":" + mMinute;
+        mDate = day + "/" + month + "/" + yr;
+        time1 = hr + ":" + min;
 
-        // Setup Reminder Title EditText
-        mTitleText.addTextChangedListener(new TextWatcher() {
+        btn1 = (FloatingActionButton) findViewById(R.id.starred1);
+        btn2 = (FloatingActionButton) findViewById(R.id.starred2);
+
+
+        tb = (Toolbar) findViewById(R.id.toolbar);
+
+
+        Settype = (TextView) findViewById(R.id.set_repeat_type);
+        mRepeatSwitch = (Switch) findViewById(R.id.repeat_switch);
+
+
+        timeshow = (TextView) findViewById(R.id.set_time);
+        onrepeate1 = (TextView) findViewById(R.id.set_repeat);
+        it1 = (TextView) findViewById(R.id.set_repeat_no);
+        txt1 = (EditText) findViewById(R.id.reminder_title);
+        Dateview = (TextView) findViewById(R.id.set_date);
+        txt1.addTextChangedListener(new TextWatcher() {
 
             @Override
             public void beforeTextChanged(CharSequence s, int start, int count, int after) {}
 
             @Override
             public void onTextChanged(CharSequence s, int start, int before, int count) {
-                mTitle = s.toString().trim();
-                mTitleText.setError(null);
+                tl1 = s.toString().trim();
+                txt1.setError(null);
             }
 
             @Override
             public void afterTextChanged(Editable s) {}
         });
 
-        // Setup TextViews using reminder values
-        mDateText.setText(mDate);
-        mTimeText.setText(mTime);
-        mRepeatNoText.setText(mRepeatNo);
-        mRepeatTypeText.setText(mRepeatType);
-        mRepeatText.setText("Every " + mRepeatNo + " " + mRepeatType + "(s)");
+        Dateview.setText(mDate);
+        timeshow.setText(time1);
+        it1.setText(mrn);
+        Settype.setText(rt12);
+        onrepeate1.setText("Every " + mrn + " " + rt12 + "(s)");
 
-        // To save state on device rotation
         if (savedInstanceState != null) {
             String savedTitle = savedInstanceState.getString(KEY_TITLE);
-            mTitleText.setText(savedTitle);
-            mTitle = savedTitle;
+            txt1.setText(savedTitle);
+            tl1 = savedTitle;
 
             String savedTime = savedInstanceState.getString(KEY_TIME);
-            mTimeText.setText(savedTime);
-            mTime = savedTime;
+            timeshow.setText(savedTime);
+            time1 = savedTime;
 
             String savedDate = savedInstanceState.getString(KEY_DATE);
-            mDateText.setText(savedDate);
+            Dateview.setText(savedDate);
             mDate = savedDate;
 
             String saveRepeat = savedInstanceState.getString(KEY_REPEAT);
-            mRepeatText.setText(saveRepeat);
+            onrepeate1.setText(saveRepeat);
             mRepeat = saveRepeat;
 
             String savedRepeatNo = savedInstanceState.getString(KEY_REPEAT_NO);
-            mRepeatNoText.setText(savedRepeatNo);
-            mRepeatNo = savedRepeatNo;
+            it1.setText(savedRepeatNo);
+            mrn = savedRepeatNo;
 
             String savedRepeatType = savedInstanceState.getString(KEY_REPEAT_TYPE);
-            mRepeatTypeText.setText(savedRepeatType);
-            mRepeatType = savedRepeatType;
+            Settype.setText(savedRepeatType);
+            rt12 = savedRepeatType;
 
-            mActive = savedInstanceState.getString(KEY_ACTIVE);
+            av = savedInstanceState.getString(KEY_ACTIVE);
         }
 
-        // Setup up active buttons
-        if (mActive.equals("false")) {
-            mFAB1.setVisibility(View.VISIBLE);
-            mFAB2.setVisibility(View.GONE);
+        if (av.equals("false")) {
+            btn1.setVisibility(View.VISIBLE);
+            btn2.setVisibility(View.GONE);
 
-        } else if (mActive.equals("true")) {
-            mFAB1.setVisibility(View.GONE);
-            mFAB2.setVisibility(View.VISIBLE);
+        } else if (av.equals("true")) {
+            btn1.setVisibility(View.GONE);
+            btn2.setVisibility(View.VISIBLE);
         }
 
-        setSupportActionBar(mToolbar);
+        setSupportActionBar(tb);
         getSupportActionBar().setTitle(R.string.title_activity_add_reminder);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setHomeButtonEnabled(true);
@@ -217,16 +225,26 @@ public class AddReminderActivity extends AppCompatActivity implements
     protected void onSaveInstanceState (Bundle outState) {
         super.onSaveInstanceState(outState);
 
-        outState.putCharSequence(KEY_TITLE, mTitleText.getText());
-        outState.putCharSequence(KEY_TIME, mTimeText.getText());
-        outState.putCharSequence(KEY_DATE, mDateText.getText());
-        outState.putCharSequence(KEY_REPEAT, mRepeatText.getText());
-        outState.putCharSequence(KEY_REPEAT_NO, mRepeatNoText.getText());
-        outState.putCharSequence(KEY_REPEAT_TYPE, mRepeatTypeText.getText());
-        outState.putCharSequence(KEY_ACTIVE, mActive);
+        outState.putCharSequence(KEY_TITLE, txt1.getText());
+        outState.putCharSequence(KEY_TIME, timeshow.getText());
+        outState.putCharSequence(KEY_DATE, Dateview.getText());
+        outState.putCharSequence(KEY_REPEAT, onrepeate1.getText());
+        outState.putCharSequence(KEY_REPEAT_NO, it1.getText());
+        outState.putCharSequence(KEY_REPEAT_TYPE, Settype.getText());
+        outState.putCharSequence(KEY_ACTIVE, av);
     }
 
-    // On clicking Time picker
+    public void setDate(View v){
+        Calendar now = Calendar.getInstance();
+        DatePickerDialog dpd = DatePickerDialog.newInstance(
+                this,
+                now.get(Calendar.YEAR),
+                now.get(Calendar.MONTH),
+                now.get(Calendar.DAY_OF_MONTH)
+        );
+        dpd.show(getFragmentManager(), "Datepickerdialog");
+    }
+
     public void setTime(View v){
         Calendar now = Calendar.getInstance();
         TimePickerDialog tpd = TimePickerDialog.newInstance(
@@ -239,73 +257,58 @@ public class AddReminderActivity extends AppCompatActivity implements
         tpd.show(getFragmentManager(), "Timepickerdialog");
     }
 
-    // On clicking Date picker
-    public void setDate(View v){
-        Calendar now = Calendar.getInstance();
-        DatePickerDialog dpd = DatePickerDialog.newInstance(
-                this,
-                now.get(Calendar.YEAR),
-                now.get(Calendar.MONTH),
-                now.get(Calendar.DAY_OF_MONTH)
-        );
-        dpd.show(getFragmentManager(), "Datepickerdialog");
+
+    public void selectFab1(View v) {
+        btn1 = (FloatingActionButton) findViewById(R.id.starred1);
+        btn1.setVisibility(View.GONE);
+        btn2 = (FloatingActionButton) findViewById(R.id.starred2);
+        btn2.setVisibility(View.VISIBLE);
+        av = "true";
     }
 
-    // Obtain time from time picker
     @Override
     public void onTimeSet(RadialPickerLayout view, int hourOfDay, int minute) {
-        mHour = hourOfDay;
-        mMinute = minute;
+        hr = hourOfDay;
+        min = minute;
         if (minute < 10) {
-            mTime = hourOfDay + ":" + "0" + minute;
+            time1 = hourOfDay + ":" + "0" + minute;
         } else {
-            mTime = hourOfDay + ":" + minute;
+            time1 = hourOfDay + ":" + minute;
         }
-        mTimeText.setText(mTime);
+        timeshow.setText(time1);
     }
 
-    // Obtain date from date picker
     @Override
     public void onDateSet(DatePickerDialog view, int year, int monthOfYear, int dayOfMonth) {
         monthOfYear ++;
-        mDay = dayOfMonth;
-        mMonth = monthOfYear;
-        mYear = year;
+        day = dayOfMonth;
+        month = monthOfYear;
+        yr = year;
         mDate = dayOfMonth + "/" + monthOfYear + "/" + year;
-        mDateText.setText(mDate);
+        Dateview.setText(mDate);
     }
 
-    // On clicking the active button
-    public void selectFab1(View v) {
-        mFAB1 = (FloatingActionButton) findViewById(R.id.starred1);
-        mFAB1.setVisibility(View.GONE);
-        mFAB2 = (FloatingActionButton) findViewById(R.id.starred2);
-        mFAB2.setVisibility(View.VISIBLE);
-        mActive = "true";
-    }
-
-    // On clicking the inactive button
-    public void selectFab2(View v) {
-        mFAB2 = (FloatingActionButton) findViewById(R.id.starred2);
-        mFAB2.setVisibility(View.GONE);
-        mFAB1 = (FloatingActionButton) findViewById(R.id.starred1);
-        mFAB1.setVisibility(View.VISIBLE);
-        mActive = "false";
-    }
-
-    // On clicking the repeat switch
     public void onSwitchRepeat(View view) {
         boolean on = ((Switch) view).isChecked();
         if (on) {
             mRepeat = "true";
-            mRepeatText.setText("Every " + mRepeatNo + " " + mRepeatType + "(s)");
+            onrepeate1.setText("Every " + mrn + " " + rt12 + "(s)");
         } else {
             mRepeat = "false";
-            mRepeatText.setText(R.string.repeat_off);
+            onrepeate1.setText(R.string.repeat_off);
         }
     }
 
-    // On clicking repeat type button
+    public void selectFab2(View v) {
+        btn2 = (FloatingActionButton) findViewById(R.id.starred2);
+        btn2.setVisibility(View.GONE);
+        btn1 = (FloatingActionButton) findViewById(R.id.starred1);
+        btn1.setVisibility(View.VISIBLE);
+        av = "false";
+    }
+
+
+
     public void selectRepeatType(View v){
         final String[] items = new String[5];
 
@@ -315,28 +318,25 @@ public class AddReminderActivity extends AppCompatActivity implements
         items[3] = "Week";
         items[4] = "Month";
 
-        // Create List Dialog
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Select Type");
         builder.setItems(items, new DialogInterface.OnClickListener() {
 
             public void onClick(DialogInterface dialog, int item) {
 
-                mRepeatType = items[item];
-                mRepeatTypeText.setText(mRepeatType);
-                mRepeatText.setText("Every " + mRepeatNo + " " + mRepeatType + "(s)");
+                rt12 = items[item];
+                Settype.setText(rt12);
+                onrepeate1.setText("Every " + mrn + " " + rt12 + "(s)");
             }
         });
         AlertDialog alert = builder.create();
         alert.show();
     }
 
-    // On clicking repeat interval button
     public void setRepeatNo(View v){
         AlertDialog.Builder alert = new AlertDialog.Builder(this);
         alert.setTitle("Enter Number");
 
-        // Create EditText box to input repeat number
         final EditText input = new EditText(this);
         input.setInputType(InputType.TYPE_CLASS_NUMBER);
         alert.setView(input);
@@ -345,20 +345,19 @@ public class AddReminderActivity extends AppCompatActivity implements
                     public void onClick(DialogInterface dialog, int whichButton) {
 
                         if (input.getText().toString().length() == 0) {
-                            mRepeatNo = Integer.toString(1);
-                            mRepeatNoText.setText(mRepeatNo);
-                            mRepeatText.setText("Every " + mRepeatNo + " " + mRepeatType + "(s)");
+                            mrn = Integer.toString(1);
+                            it1.setText(mrn);
+                            onrepeate1.setText("Every " + mrn + " " + rt12 + "(s)");
                         }
                         else {
-                            mRepeatNo = input.getText().toString().trim();
-                            mRepeatNoText.setText(mRepeatNo);
-                            mRepeatText.setText("Every " + mRepeatNo + " " + mRepeatType + "(s)");
+                            mrn = input.getText().toString().trim();
+                            it1.setText(mrn);
+                            onrepeate1.setText("Every " + mrn + " " + rt12 + "(s)");
                         }
                     }
                 });
         alert.setNegativeButton("Cancel", new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int whichButton) {
-                // do nothing
             }
         });
         alert.show();
@@ -366,20 +365,15 @@ public class AddReminderActivity extends AppCompatActivity implements
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu options from the res/menu/menu_editor.xml file.
-        // This adds menu items to the app bar.
+
         getMenuInflater().inflate(R.menu.menu_add_reminder, menu);
         return true;
     }
 
-    /**
-     * This method is called after invalidateOptionsMenu(), so that the
-     * menu can be updated (some menu items can be hidden or made visible).
-     */
+
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         super.onPrepareOptionsMenu(menu);
-        // If this is a new reminder, hide the "Delete" menu item.
         if (mCurrentReminderUri == null) {
             MenuItem menuItem = menu.findItem(R.id.discard_reminder);
             menuItem.setVisible(false);
@@ -390,14 +384,12 @@ public class AddReminderActivity extends AppCompatActivity implements
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
 
-        // User clicked on a menu option in the app bar overflow menu
         switch (item.getItemId()) {
-            // Respond to a click on the "Save" menu option
             case R.id.save_reminder:
 
 
-                if (mTitleText.getText().toString().length() == 0){
-                    mTitleText.setError("Reminder Title cannot be blank!");
+                if (txt1.getText().toString().length() == 0){
+                    txt1.setError("Reminder Title cannot be blank!");
                 }
 
                 else {
@@ -405,33 +397,23 @@ public class AddReminderActivity extends AppCompatActivity implements
                     finish();
                 }
                 return true;
-            // Respond to a click on the "Delete" menu option
             case R.id.discard_reminder:
-                // Pop up confirmation dialog for deletion
                 showDeleteConfirmationDialog();
                 return true;
-            // Respond to a click on the "Up" arrow button in the app bar
             case android.R.id.home:
-                // If the reminder hasn't changed, continue with navigating up to parent activity
-                // which is the {@link MainActivity}.
-                if (!mVehicleHasChanged) {
+                if (!flag1) {
                     NavUtils.navigateUpFromSameTask(AddReminderActivity.this);
                     return true;
                 }
 
-                // Otherwise if there are unsaved changes, setup a dialog to warn the user.
-                // Create a click listener to handle the user confirming that
-                // changes should be discarded.
                 DialogInterface.OnClickListener discardButtonClickListener =
                         new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialogInterface, int i) {
-                                // User clicked "Discard" button, navigate to parent activity.
                                 NavUtils.navigateUpFromSameTask(AddReminderActivity.this);
                             }
                         };
 
-                // Show a dialog that notifies the user they have unsaved changes
                 showUnsavedChangesDialog(discardButtonClickListener);
                 return true;
         }
@@ -441,132 +423,104 @@ public class AddReminderActivity extends AppCompatActivity implements
 
     private void showUnsavedChangesDialog(
             DialogInterface.OnClickListener discardButtonClickListener) {
-        // Create an AlertDialog.Builder and set the message, and click listeners
-        // for the postivie and negative buttons on the dialog.
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.unsaved_changes_dialog_msg);
         builder.setPositiveButton(R.string.discard, discardButtonClickListener);
         builder.setNegativeButton(R.string.keep_editing, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                // User clicked the "Keep editing" button, so dismiss the dialog
-                // and continue editing the reminder.
+
                 if (dialog != null) {
                     dialog.dismiss();
                 }
             }
         });
 
-        // Create and show the AlertDialog
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
 
     private void showDeleteConfirmationDialog() {
-        // Create an AlertDialog.Builder and set the message, and click listeners
-        // for the postivie and negative buttons on the dialog.
+
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setMessage(R.string.delete_dialog_msg);
         builder.setPositiveButton(R.string.delete, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                // User clicked the "Delete" button, so delete the reminder.
                 deleteReminder();
             }
         });
         builder.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int id) {
-                // User clicked the "Cancel" button, so dismiss the dialog
-                // and continue editing the reminder.
                 if (dialog != null) {
                     dialog.dismiss();
                 }
             }
         });
 
-        // Create and show the AlertDialog
         AlertDialog alertDialog = builder.create();
         alertDialog.show();
     }
 
     private void deleteReminder() {
-        // Only perform the delete if this is an existing reminder.
         if (mCurrentReminderUri != null) {
-            // Call the ContentResolver to delete the reminder at the given content URI.
-            // Pass in null for the selection and selection args because the mCurrentreminderUri
-            // content URI already identifies the reminder that we want.
+
             int rowsDeleted = getContentResolver().delete(mCurrentReminderUri, null, null);
 
-            // Show a toast message depending on whether or not the delete was successful.
             if (rowsDeleted == 0) {
-                // If no rows were deleted, then there was an error with the delete.
                 Toast.makeText(this, getString(R.string.editor_delete_reminder_failed),
                         Toast.LENGTH_SHORT).show();
             } else {
-                // Otherwise, the delete was successful and we can display a toast.
                 Toast.makeText(this, getString(R.string.editor_delete_reminder_successful),
                         Toast.LENGTH_SHORT).show();
             }
         }
 
-        // Close the activity
         finish();
     }
 
-    // On clicking the save button
     public void saveReminder(){
 
-     /*   if (mCurrentReminderUri == null ) {
-            // Since no fields were modified, we can return early without creating a new reminder.
-            // No need to create ContentValues and no need to do any ContentProvider operations.
-            return;
-        }
-*/
 
         ContentValues values = new ContentValues();
 
-        values.put(AlarmReminderContract.AlarmReminderEntry.KEY_TITLE, mTitle);
+        values.put(AlarmReminderContract.AlarmReminderEntry.KEY_TITLE, tl1);
         values.put(AlarmReminderContract.AlarmReminderEntry.KEY_DATE, mDate);
-        values.put(AlarmReminderContract.AlarmReminderEntry.KEY_TIME, mTime);
+        values.put(AlarmReminderContract.AlarmReminderEntry.KEY_TIME, time1);
         values.put(AlarmReminderContract.AlarmReminderEntry.KEY_REPEAT, mRepeat);
-        values.put(AlarmReminderContract.AlarmReminderEntry.KEY_REPEAT_NO, mRepeatNo);
-        values.put(AlarmReminderContract.AlarmReminderEntry.KEY_REPEAT_TYPE, mRepeatType);
-        values.put(AlarmReminderContract.AlarmReminderEntry.KEY_ACTIVE, mActive);
+        values.put(AlarmReminderContract.AlarmReminderEntry.KEY_REPEAT_NO, mrn);
+        values.put(AlarmReminderContract.AlarmReminderEntry.KEY_REPEAT_TYPE, rt12);
+        values.put(AlarmReminderContract.AlarmReminderEntry.KEY_ACTIVE, av);
 
 
-        // Set up calender for creating the notification
-        mCalendar.set(Calendar.MONTH, --mMonth);
-        mCalendar.set(Calendar.YEAR, mYear);
-        mCalendar.set(Calendar.DAY_OF_MONTH, mDay);
-        mCalendar.set(Calendar.HOUR_OF_DAY, mHour);
-        mCalendar.set(Calendar.MINUTE, mMinute);
-        mCalendar.set(Calendar.SECOND, 0);
+        cal.set(Calendar.MONTH, --month);
+        cal.set(Calendar.YEAR, yr);
+        cal.set(Calendar.DAY_OF_MONTH, day);
+        cal.set(Calendar.HOUR_OF_DAY, hr);
+        cal.set(Calendar.MINUTE, min);
+        cal.set(Calendar.SECOND, 0);
 
-        long selectedTimestamp =  mCalendar.getTimeInMillis();
+        long selectedTimestamp =  cal.getTimeInMillis();
 
-        // Check repeat type
-        if (mRepeatType.equals("Minute")) {
-            mRepeatTime = Integer.parseInt(mRepeatNo) * milMinute;
-        } else if (mRepeatType.equals("Hour")) {
-            mRepeatTime = Integer.parseInt(mRepeatNo) * milHour;
-        } else if (mRepeatType.equals("Day")) {
-            mRepeatTime = Integer.parseInt(mRepeatNo) * milDay;
-        } else if (mRepeatType.equals("Week")) {
-            mRepeatTime = Integer.parseInt(mRepeatNo) * milWeek;
-        } else if (mRepeatType.equals("Month")) {
-            mRepeatTime = Integer.parseInt(mRepeatNo) * milMonth;
+        if (rt12.equals("Minute")) {
+            mRepeatTime = Integer.parseInt(mrn) * min1;
+        } else if (rt12.equals("Hour")) {
+            mRepeatTime = Integer.parseInt(mrn) * hr1;
+        } else if (rt12.equals("Day")) {
+            mRepeatTime = Integer.parseInt(mrn) * day1;
+        } else if (rt12.equals("Week")) {
+            mRepeatTime = Integer.parseInt(mrn) * week1;
+        } else if (rt12.equals("Month")) {
+            mRepeatTime = Integer.parseInt(mrn) * mont1;
         }
 
         if (mCurrentReminderUri == null) {
-            // This is a NEW reminder, so insert a new reminder into the provider,
-            // returning the content URI for the new reminder.
+
             Uri newUri = getContentResolver().insert(AlarmReminderContract.AlarmReminderEntry.CONTENT_URI, values);
 
-            // Show a toast message depending on whether or not the insertion was successful.
             if (newUri == null) {
-                // If the new content URI is null, then there was an error with insertion.
                 Toast.makeText(this, getString(R.string.editor_insert_reminder_failed),
                         Toast.LENGTH_SHORT).show();
             } else {
-                // Otherwise, the insertion was successful and we can display a toast.
                 Toast.makeText(this, getString(R.string.editor_insert_reminder_successful),
                         Toast.LENGTH_SHORT).show();
             }
@@ -574,20 +528,16 @@ public class AddReminderActivity extends AppCompatActivity implements
 
             int rowsAffected = getContentResolver().update(mCurrentReminderUri, values, null, null);
 
-            // Show a toast message depending on whether or not the update was successful.
             if (rowsAffected == 0) {
-                // If no rows were affected, then there was an error with the update.
                 Toast.makeText(this, getString(R.string.editor_update_reminder_failed),
                         Toast.LENGTH_SHORT).show();
             } else {
-                // Otherwise, the update was successful and we can display a toast.
                 Toast.makeText(this, getString(R.string.editor_update_reminder_successful),
                         Toast.LENGTH_SHORT).show();
             }
         }
 
-        // Create a new notification
-        if (mActive.equals("true")) {
+        if (av.equals("true")) {
             if (mRepeat.equals("true")) {
                 new AlarmScheduler().setRepeatAlarm(getApplicationContext(), selectedTimestamp, mCurrentReminderUri, mRepeatTime);
             } else if (mRepeat.equals("false")) {
@@ -598,13 +548,11 @@ public class AddReminderActivity extends AppCompatActivity implements
                     Toast.LENGTH_LONG).show();
         }
 
-        // Create toast to confirm new reminder
         Toast.makeText(getApplicationContext(), "Saved",
                 Toast.LENGTH_SHORT).show();
 
     }
 
-    // On pressing the back button
     @Override
     public void onBackPressed() {
         super.onBackPressed();
@@ -628,13 +576,12 @@ public class AddReminderActivity extends AppCompatActivity implements
                 AlarmReminderContract.AlarmReminderEntry.KEY_ACTIVE,
         };
 
-        // This loader will execute the ContentProvider's query method on a background thread
-        return new CursorLoader(this,   // Parent activity context
-                mCurrentReminderUri,         // Query the content URI for the current reminder
-                projection,             // Columns to include in the resulting Cursor
-                null,                   // No selection clause
-                null,                   // No selection arguments
-                null);                  // Default sort order
+        return new CursorLoader(this,
+                mCurrentReminderUri,
+                projection,
+                null,
+                null,
+                null);
     }
 
     @Override
@@ -643,8 +590,7 @@ public class AddReminderActivity extends AppCompatActivity implements
             return;
         }
 
-        // Proceed with moving to the first row of the cursor and reading data from it
-        // (This should be the only row in the cursor)
+
         if (cursor.moveToFirst()) {
             int titleColumnIndex = cursor.getColumnIndex(AlarmReminderContract.AlarmReminderEntry.KEY_TITLE);
             int dateColumnIndex = cursor.getColumnIndex(AlarmReminderContract.AlarmReminderEntry.KEY_DATE);
@@ -654,7 +600,6 @@ public class AddReminderActivity extends AppCompatActivity implements
             int repeatTypeColumnIndex = cursor.getColumnIndex(AlarmReminderContract.AlarmReminderEntry.KEY_REPEAT_TYPE);
             int activeColumnIndex = cursor.getColumnIndex(AlarmReminderContract.AlarmReminderEntry.KEY_ACTIVE);
 
-            // Extract out the value from the Cursor for the given column index
             String title = cursor.getString(titleColumnIndex);
             String date = cursor.getString(dateColumnIndex);
             String time = cursor.getString(timeColumnIndex);
@@ -665,18 +610,16 @@ public class AddReminderActivity extends AppCompatActivity implements
 
 
 
-            // Update the views on the screen with the values from the database
-            mTitleText.setText(title);
-            mDateText.setText(date);
-            mTimeText.setText(time);
-            mRepeatNoText.setText(repeatNo);
-            mRepeatTypeText.setText(repeatType);
-            mRepeatText.setText("Every " + repeatNo + " " + repeatType + "(s)");
-            // Setup up active buttons
-            // Setup repeat switch
+            txt1.setText(title);
+            Dateview.setText(date);
+            timeshow.setText(time);
+            it1.setText(repeatNo);
+            Settype.setText(repeatType);
+            onrepeate1.setText("Every " + repeatNo + " " + repeatType + "(s)");
+
             if (repeat.equals("false")) {
                 mRepeatSwitch.setChecked(false);
-                mRepeatText.setText(R.string.repeat_off);
+                onrepeate1.setText(R.string.repeat_off);
 
             } else if (repeat.equals("true")) {
                 mRepeatSwitch.setChecked(true);

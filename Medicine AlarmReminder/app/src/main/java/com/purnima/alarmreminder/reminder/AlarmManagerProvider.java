@@ -2,24 +2,24 @@ package com.purnima.alarmreminder.reminder;
 
 import android.app.AlarmManager;
 import android.content.Context;
+import android.widget.Toast;
 
-/**
- * Created by delaroy on 9/22/17.
- */
 
 public class AlarmManagerProvider {
     private static final String TAG = AlarmManagerProvider.class.getSimpleName();
-    private static AlarmManager sAlarmManager;
+    private static AlarmManager a;
     public static synchronized void injectAlarmManager(AlarmManager alarmManager) {
-        if (sAlarmManager != null) {
+        if (a != null) {
             throw new IllegalStateException("Alarm Manager Already Set");
         }
-        sAlarmManager = alarmManager;
+        a = alarmManager;
+      //  Toast.makeText(getApplicationContext(), " Generate toast",
+        //        Toast.LENGTH_LONG).show();
     }
-    /*package*/ static synchronized AlarmManager getAlarmManager(Context context) {
-        if (sAlarmManager == null) {
-            sAlarmManager = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
+        static synchronized AlarmManager getAlarmManager(Context context) {
+        if (a == null) {
+            a = (AlarmManager) context.getSystemService(Context.ALARM_SERVICE);
         }
-        return sAlarmManager;
+        return a;
     }
 }
