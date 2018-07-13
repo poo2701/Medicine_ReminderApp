@@ -12,7 +12,7 @@ import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 
 import com.purnima.alarmreminder.AddReminderActivity;
-import com.delaroystudios.alarmreminder.R;
+import com.purnima.alarmreminder.R;
 import com.purnima.alarmreminder.data.AlarmReminderContract;
 
 

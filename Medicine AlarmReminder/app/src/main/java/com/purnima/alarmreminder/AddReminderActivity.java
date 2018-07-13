@@ -26,7 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 
-import com.delaroystudios.alarmreminder.R;
+import com.purnima.alarmreminder.R;
 import com.purnima.alarmreminder.data.AlarmReminderContract;
 import com.purnima.alarmreminder.reminder.AlarmScheduler;
 import com.getbase.floatingactionbutton.FloatingActionButton;

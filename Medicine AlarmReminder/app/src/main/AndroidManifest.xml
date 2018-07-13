@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.delaroystudios.alarmreminder">
+    package="com.purnima.alarmreminder">
 
     <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
     <uses-permission android:name="android.permission.INTERNET" />
@@ -45,7 +45,7 @@
 
         <provider
             android:name="com.purnima.alarmreminder.data.AlarmReminderProvider"
-            android:authorities="com.delaroystudios.alarmreminder"
+            android:authorities="com.purnima.alarmreminder"
             android:exported="false" />
 
         <service

@@ -8,7 +8,7 @@ import android.view.*;
 import android.content.CursorLoader;
 import android.content.Intent;
 import android.widget.ListView;
-import com.delaroystudios.alarmreminder.R;
+import com.purnima.alarmreminder.R;
 import com.purnima.alarmreminder.data.AlarmReminderContract;
 import com.purnima.alarmreminder.data.AlarmReminderDbHelper;
 import android.support.design.widget.FloatingActionButton;

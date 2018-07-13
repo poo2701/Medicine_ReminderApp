@@ -1,4 +1,4 @@
-package com.delaroystudios.alarmreminder;
+package com.purnima.alarmreminder;
 
 import org.junit.Test;
 
